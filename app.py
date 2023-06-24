@@ -8,6 +8,8 @@ model_path = './model.tflite'
 import os
 import shutil
 
+# https://deep-learning-rbl-project.netlify.app/
+
 # define the path to the static folder
 DETECTION_THRESHOLD = 0.4
 #c
@@ -119,7 +121,7 @@ def home():
         random_string = secrets.token_hex(8)
         
         im = Image.open(image)
-        im.save(f'static/input{random_string}.png')
+        # im.save(f'static/input{random_string}.png')
         im.thumbnail((512, 512), Image.ANTIALIAS)
         im_arr = np.array(im)
 
@@ -128,15 +130,16 @@ def home():
             interpreter,
             threshold=DETECTION_THRESHOLD
         )
-        img = Image.fromarray(detection_result_image)
-        img.save(f'static/predicted{random_string}.png')
+        # img = Image.fromarray(detection_result_image)
+        # img.save(f'static/predicted{random_string}.png')
         
         # Render the result template with the input and predicted images
         # return render_template('result.html', input_image=f'input{random_string}.png', predicted_image=f'predicted{random_string}.png')
     
     # Render the home template for GET request
     # return render_template('home.html')
-    return send_file(f'static/predicted{random_string}.png', mimetype='image/png')
+    # return send_file(f'static/predicted{random_string}.png', mimetype='image/png')
+    return detection_result_image.tolist()
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=80)
