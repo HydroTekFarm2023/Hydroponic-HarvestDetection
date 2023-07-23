@@ -18,6 +18,8 @@ CORS(app, origins=["http://localhost:4200"])
 
 # https://deep-learning-rbl-project.netlify.app/
 
+# https://deep-learning-rbl-project.netlify.app/
+
 # define the path to the static folder
 DETECTION_THRESHOLD = 0.4
 #c

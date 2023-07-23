@@ -16,4 +16,8 @@ data_arr = data_arr.reshape((height, width, 3))
 img = Image.fromarray(data_arr)
 
 # save the image to disk
+<<<<<<< HEAD
 img.save('TestOutput1.png')
+=======
+img.save('output.png')
+>>>>>>> a964375214e689f67ca95c6138c94e83acc025f9
