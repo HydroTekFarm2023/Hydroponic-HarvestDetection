@@ -1,0 +1,14 @@
+
+  <header class="center">
+    <h1>Welcome to HydroTek Farm LLC.</h1>
+  </header>
+
+  <div class="mn">
+    <img src="../assets/hydroteklogo.png" alt="My Image" /><br>
+        <input type="file" (change)="onFileSelected($event)">
+        <button (click)="fetchDataFromApi()">Fetch Data</button>
+        <h1 >API Response:</h1>
+        <!-- <img src={{apiData}} alt="output" /> -->
+        <span >{{apiData}}</span><!--  Display the text response here --> <br>
+        <a href="file:///C:/code/hydroTech/abhi/TestOutput1.png" target="_blank" >click here for output</a>
+  </div>
