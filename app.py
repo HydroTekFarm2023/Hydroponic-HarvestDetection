@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,send_file
+from flask import Flask, render_template, request,send_file,jsonify
 from PIL import Image
 import numpy as np
 import tensorflow as tf
@@ -7,6 +7,16 @@ import secrets
 model_path = './model.tflite'
 import os
 import shutil
+from flask_cors import CORS
+import requests
+import subprocess
+import json
+
+app = Flask(__name__)
+# cors = CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
+CORS(app, origins=["http://localhost:4200"])
+
+# https://deep-learning-rbl-project.netlify.app/
 
 # define the path to the static folder
 DETECTION_THRESHOLD = 0.4
@@ -25,7 +35,7 @@ def preprocess_image(image_arr, input_size):
     resized_img = tf.cast(resized_img, dtype=tf.uint8)
     return resized_img, original_image
 
-
+results = []
 def detect_objects(interpreter, image, threshold):
   """Returns a list of detection results, each a dictionary of object info."""
 
@@ -40,13 +50,13 @@ def detect_objects(interpreter, image, threshold):
   classes = np.squeeze(output['output_2'])
   boxes = np.squeeze(output['output_3'])
 
-  results = []
+  
   for i in range(count):
     if scores[i] >= threshold:
       result = {
-        'bounding_box': boxes[i],
-        'class_id': classes[i],
-        'score': scores[i]
+        "bounding_box": boxes[i],
+        "class_id": classes[i],
+        "score": scores[i]
       }
       results.append(result)
   return results
@@ -63,6 +73,7 @@ def run_odt_and_draw_results(image_path, interpreter, threshold=0.5):
     )
 
   # Run object detection on the input image
+  
   results = detect_objects(interpreter, preprocessed_image, threshold=threshold)
 
   # Plot the detection results on the input image
@@ -75,6 +86,7 @@ def run_odt_and_draw_results(image_path, interpreter, threshold=0.5):
     xmax = int(xmax * original_image_np.shape[1])
     ymin = int(ymin * original_image_np.shape[0])
     ymax = int(ymax * original_image_np.shape[0])
+    
 
     # Find the class index of the current object
     class_id = int(obj['class_id'])
@@ -95,7 +107,7 @@ model_path = './model.tflite'
 interpreter = tf.lite.Interpreter(model_path=model_path)
 interpreter.allocate_tensors()
 
-app = Flask(__name__)
+
 
 @app.before_request
 def clear_static_folder():
@@ -104,11 +116,14 @@ def clear_static_folder():
         return
     shutil.rmtree(app.static_folder)
     os.mkdir(app.static_folder)
+    url = 'http://127.0.0.1:4200/'
     
-    
-@app.route('/test', methods=['GET', 'POST'])
-def hello():
-  return "hello world"
+
+def numpy_encoder(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -119,7 +134,7 @@ def home():
         random_string = secrets.token_hex(8)
         
         im = Image.open(image)
-        im.save(f'static/input{random_string}.png')
+        # im.save(f'static/input{random_string}.png')
         im.thumbnail((512, 512), Image.ANTIALIAS)
         im_arr = np.array(im)
 
@@ -128,15 +143,28 @@ def home():
             interpreter,
             threshold=DETECTION_THRESHOLD
         )
-        img = Image.fromarray(detection_result_image)
-        img.save(f'static/predicted{random_string}.png')
+        # img = Image.fromarray(detection_result_image)
+        # img.save(f'static/predicted{random_string}.png')
         
         # Render the result template with the input and predicted images
         # return render_template('result.html', input_image=f'input{random_string}.png', predicted_image=f'predicted{random_string}.png')
     
     # Render the home template for GET request
     # return render_template('home.html')
-    return send_file(f'static/predicted{random_string}.png', mimetype='image/png')
+    # return send_file(f'static/predicted{random_string}.png', mimetype='image/png')
+    with open("imag.txt", "w") as file:
+      file.write(str(detection_result_image.tolist()))
+    subprocess.check_output(['python', 'test.py'], text=True)
+    current_path = os.getcwd()
+    # return detection_result_image.tolist()
+    # results.append(current_path+'\TestOutput1.png')
+    ans = []
+    for x in results:
+      ans.append(x['class_id'])
+    print(ans)
+    return str(ans)
+  
+
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=80,debug=True)
