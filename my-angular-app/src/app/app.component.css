@@ -1,0 +1,56 @@
+/* Reset default margin and padding for all elements */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set background color and center content in the header */
+header.center {
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 20px;
+  background-color: rgb(203, 9, 9);
+  color: white;
+}
+
+/* Style the main content area */
+div.mn {
+  text-align: center;
+  padding: 20px;
+  background-color: black;
+  color: white;
+  height: calc(100vh - 150px);
+  font-size: 1.3rem;
+}
+
+/* Style the image */
+div.mn img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+/* Style the input and button */
+div.mn input[type="file"],
+div.mn button {
+  margin-bottom: 10px;
+}
+
+/* Style the API response heading and text */
+div.mn h1 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+div.mn span {
+  font-size: 14px;
+}
+
+/* Style the link for the output image */
+div.mn a {
+  display: block;
+  margin-top: 10px;
+  color: #007bff;
+  /* You can change this color to fit your design */
+  text-decoration: none;
+}
